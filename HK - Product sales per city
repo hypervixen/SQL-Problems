@@ -1,0 +1,16 @@
+SELECT 
+    cout.country_name, 
+    COUNT(*) AS customer_count, 
+    AVG(inv.total_price) AS avg_total_price
+FROM country AS cout
+JOIN city AS cit 
+    ON cout.id = cit.country_id
+JOIN customer AS cus 
+    ON cit.id = cus.city_id
+JOIN invoice AS inv 
+    ON cus.id = inv.customer_id
+GROUP BY cout.country_name
+HAVING AVG(inv.total_price) > (
+    SELECT AVG(total_price)
+    FROM invoice
+);
