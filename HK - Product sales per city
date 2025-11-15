@@ -1,16 +1,15 @@
 SELECT 
-    cout.country_name, 
-    COUNT(*) AS customer_count, 
-    AVG(inv.total_price) AS avg_total_price
-FROM country AS cout
-JOIN city AS cit 
-    ON cout.id = cit.country_id
+    cit.city_name, 
+    pr.product_name, 
+    ROUND(SUM(invt.line_total_price), 2) AS tot
+FROM city AS cit
 JOIN customer AS cus 
     ON cit.id = cus.city_id
 JOIN invoice AS inv 
     ON cus.id = inv.customer_id
-GROUP BY cout.country_name
-HAVING AVG(inv.total_price) > (
-    SELECT AVG(total_price)
-    FROM invoice
-);
+JOIN invoice_item AS invt 
+    ON inv.id = invt.invoice_id
+JOIN product AS pr 
+    ON invt.product_id = pr.id
+GROUP BY cit.city_name, pr.product_name
+ORDER BY tot DESC, cit.city_name, pr.product_name;
